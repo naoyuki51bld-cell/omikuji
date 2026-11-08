@@ -20,7 +20,6 @@ const DEFAULTS = {
     { name: "末吉", weight: 20, color: "#5b8c5a" },
     { name: "凶", weight: 10, color: "#5a6b8c" },
   ],
-  photoIds: [],
   messages: [
     "最高の一日！何をやってもうまくいく予感",
     "いい流れが来ています。自信をもって進もう",
@@ -196,19 +195,17 @@ function renderDraw() {
     $("#drawBtn").disabled = true;
     $("#box").classList.add("shake");
     setTimeout(() => {
-      // 要素ごとに別々の乱数で選ぶ（どれかのリストを変えても他は変わらない）
+      // 要素ごとに別々の乱数で選ぶ（どれかのリストを変えても他は変わらない）。写真だけは運勢に付いたもの
       const rnd = name => dayRandom(`omikuji|${todayKey}|${name}`);
       const f = pickWeighted(list, rnd("rank"));
       const colors = (CONFIG.luckyColors || []).filter(c => c && c.name);
       const items = (CONFIG.luckyItems || []).filter(Boolean);
-      const photoIds = (CONFIG.photoIds || []).filter(Boolean);
       const msgs = CONFIG.messages || [];
       const adv = CONFIG.advice || [];
       const r = {
         date: todayKey,
         rank: f.name,
         rankColor: f.color,
-        photoId: photoIds.length ? pick(photoIds, rnd("photo")) : "",
         message: msgs.length ? pick(msgs, rnd("message")) : "",
         advice: adv.length ? pick(adv, rnd("advice")) : "今日も素敵な一日を",
         color: colors.length ? pick(colors, rnd("color")) : { name: "-", code: "#ffffff" },
@@ -254,8 +251,10 @@ function renderResult(r, animate) {
         <div class="countdown" id="countdown"></div>
       </section>
     </div>`;
-  if (r.photoId) {
-    loadPhoto(r.photoId).then(src => {
+  // 写真は保存済みの結果ではなく、今の設定でその運勢に付いている写真を出す
+  const photoId = f && f.photoId;
+  if (photoId) {
+    loadPhoto(photoId).then(src => {
       const slot = $("#photoSlot");
       if (src && slot) slot.innerHTML = `<img class="photo" src="${esc(src)}" alt="${esc(r.rank)}の写真">`;
     });
@@ -368,7 +367,6 @@ async function openSettings(currentPin) {
   unlockedPin = currentPin;
   draft = structuredClone(CONFIG);
   draft.pin = currentPin;
-  draft.photos = [];
   const el = document.createElement("div");
   el.className = "settings";
   el.id = "settings";
@@ -377,9 +375,9 @@ async function openSettings(currentPin) {
   el.innerHTML = `<div class="wrap"><div class="loading">設定を読み込み中…</div></div>`;
   document.body.appendChild(el);
   document.body.style.overflow = "hidden";
-  const ids = (CONFIG.photoIds || []).filter(Boolean);
-  const datas = await Promise.all(ids.map(loadPhoto));
-  draft.photos = ids.map((id, i) => ({ id, data: datas[i] })).filter(p => p.data);
+  // 各運勢の写真を読み込んでおく（photo: {id, data}。id が null のものは未保存の新しい写真）
+  const datas = await Promise.all(draft.fortunes.map(f => loadPhoto(f.photoId)));
+  draft.fortunes.forEach((f, i) => { f.photo = datas[i] ? { id: f.photoId, data: datas[i] } : null; });
   renderSettings();
 }
 
@@ -410,8 +408,8 @@ function renderSettings() {
       </section>
 
       <section class="card s-section">
-        <h3>運勢と出る確率</h3>
-        <p class="s-note">「出やすさ」は比率です。合計が100でなくても、自動で割合に直します。運勢・写真・ひとこと・アドバイス・ラッキーカラー・アイテムは、それぞれ別々にランダムで選ばれます（同じ日なら何度開いても同じ結果です）。</p>
+        <h3>運勢・出る確率・写真</h3>
+        <p class="s-note">「出やすさ」は比率です。合計が100でなくても、自動で割合に直します。写真はその運勢が出たときに表示されます（写真がない運勢は文字が大きく表示されます）。ひとこと・アドバイス・ラッキーカラー・アイテムは、運勢とは別々にランダムで選ばれます（同じ日なら何度開いても同じ結果です）。</p>
         <div class="total" id="s-total">合計 ${totalW}</div>
         ${draft.fortunes.map((f, i) => `
           <div class="fortune-edit" data-i="${i}">
@@ -420,20 +418,14 @@ function renderSettings() {
               <label class="field"><span>出やすさ</span><input type="number" min="0" step="1" data-k="weight" value="${esc(f.weight)}"><div class="pct" data-pct></div></label>
               <label class="field"><span>色</span><input type="color" data-k="color" value="${esc(f.color || "#c8352a")}"></label>
             </div>
+            <div class="photo-edit">
+              <div class="thumb">${f.photo ? `<img src="${esc(f.photo.data)}" alt="${esc(f.name)}の写真">` : "写真なし"}</div>
+              <div class="row-btns" style="justify-content:flex-start">
+                <label class="btn small file-label">${f.photo ? "写真を変える" : "写真を選ぶ"}<input type="file" accept="image/*" data-photo="${i}"></label>
+                ${f.photo ? `<button class="btn small" type="button" data-rmphoto="${i}">写真を外す</button>` : ""}
+              </div>
+            </div>
           </div>`).join("")}
-      </section>
-
-      <section class="card s-section">
-        <h3>写真</h3>
-        <p class="s-note">毎日この中から1枚選ばれます。何枚でも追加できます（まとめて選択もできます）。写真がないときは運勢の文字が大きく表示されます。</p>
-        <div class="photo-grid">
-          ${draft.photos.map((p, i) => `
-            <div class="photo-cell">
-              <img src="${esc(p.data)}" alt="写真${i + 1}">
-              <button class="del" type="button" data-rmphoto="${i}" aria-label="写真${i + 1}を外す">×</button>
-            </div>`).join("")}
-        </div>
-        <label class="btn small file-label">＋ 写真を追加<input type="file" accept="image/*" multiple id="s-photo-add"></label>
       </section>
 
       <section class="card s-section">
@@ -504,9 +496,9 @@ function renderSettings() {
   updatePct();
   $("#sClose").addEventListener("click", closeSettings);
   el.addEventListener("input", e => { if (e.target.dataset.k === "weight") updatePct(); });
-  $("#s-photo-add").addEventListener("change", onPhoto);
+  $$("[data-photo]", el).forEach(inp => inp.addEventListener("change", onPhoto));
   $$("[data-rmphoto]", el).forEach(b => b.addEventListener("click", () => {
-    collect(); draft.photos.splice(Number(b.dataset.rmphoto), 1); renderSettings();
+    collect(); draft.fortunes[Number(b.dataset.rmphoto)].photo = null; renderSettings();
   }));
   $$("[data-delcolor]", el).forEach(b => b.addEventListener("click", () => {
     collect(); draft.luckyColors.splice(Number(b.dataset.delcolor), 1); renderSettings();
@@ -577,17 +569,16 @@ function shrinkPhoto(file) {
 }
 
 async function onPhoto(e) {
-  const files = Array.from(e.target.files || []);
-  if (!files.length) return;
+  const file = e.target.files && e.target.files[0];
+  const i = Number(e.target.dataset.photo);
+  if (!file) return;
   collect();
   setSaveMsg("写真を読み込んでいます…", "");
-  const results = await Promise.all(files.map(shrinkPhoto));
-  const ok = results.filter(Boolean);
-  draft.photos.push(...ok.map(data => ({ id: null, data })));
+  const data = await shrinkPhoto(file);
+  if (!data) { setSaveMsg("この写真は読み込めませんでした。JPEG か PNG の写真を選んでください", "err"); return; }
+  draft.fortunes[i].photo = { id: null, data };
   renderSettings();
-  const failed = results.length - ok.length;
-  if (failed) setSaveMsg(`${failed}枚は読み込めませんでした。JPEG か PNG の写真を選んでください`, "err");
-  else setSaveMsg(`写真を${ok.length}枚追加しました。「保存する」で反映されます`, "");
+  setSaveMsg(`「${draft.fortunes[i].name}」の写真を入れました。「保存する」で反映されます`, "");
 }
 
 function setSaveMsg(text, cls) {
@@ -617,21 +608,27 @@ async function saveSettings() {
   btn.disabled = true;
   setSaveMsg("保存しています…", "");
   try {
-    // 新しい写真を1枚ずつ保存し、外した写真は消す
-    for (const p of draft.photos) {
-      if (p.id) continue;
+    // 新しい写真を1枚ずつ保存し、外した・差し替えた写真は消す
+    for (const f of draft.fortunes) {
+      const p = f.photo;
+      if (!p || p.id) continue;
       const ref = doc(collection(fb.db, "photos"));
       await setDoc(ref, { data: p.data, at: serverTimestamp() });
       p.id = ref.id;
       photoCache.set(ref.id, p.data);
     }
-    const keep = new Set(draft.photos.map(p => p.id));
-    for (const id of CONFIG.photoIds || []) {
+    const keep = new Set(draft.fortunes.map(f => f.photo && f.photo.id).filter(Boolean));
+    const oldIds = [...(CONFIG.fortunes || []).map(f => f.photoId), ...(CONFIG.photoIds || [])].filter(Boolean);
+    for (const id of oldIds) {
       if (!keep.has(id)) await deleteDoc(doc(fb.db, "photos", id)).catch(() => {});
     }
 
-    const { pin, photos, ...rest } = draft;
-    const settings = { ...rest, photoIds: draft.photos.map(p => p.id), updatedAt: serverTimestamp() };
+    const { pin, photoIds, ...rest } = draft;
+    const settings = {
+      ...rest,
+      fortunes: draft.fortunes.map(f => ({ name: f.name, weight: f.weight, color: f.color, photoId: (f.photo && f.photo.id) || "" })),
+      updatedAt: serverTimestamp(),
+    };
     await setDoc(doc(fb.db, "settings", "main"), settings);
 
     // 暗証番号を変えたときは、隠し場所の番号とこの端末の解錠情報も新しい番号にそろえる
