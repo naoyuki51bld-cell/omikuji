@@ -13,41 +13,68 @@ const DEFAULTS = {
   title: "今日の小池みくじ",
   name: "ななか",
   startDate: "2025-04-01",
+  // ひとこと・アドバイスは運勢ごとに持つ。出た運勢のリストからランダムに選ばれる
   fortunes: [
-    { name: "大吉", weight: 15, color: "#d4372c" },
-    { name: "中吉", weight: 25, color: "#e0752d" },
-    { name: "吉", weight: 30, color: "#c99a1e" },
-    { name: "末吉", weight: 20, color: "#5b8c5a" },
-    { name: "凶", weight: 10, color: "#5a6b8c" },
-  ],
-  messages: [
-    "最高の一日！何をやってもうまくいく予感",
-    "いい流れが来ています。自信をもって進もう",
-    "穏やかで心地よい一日になりそう",
-    "後半になるほど運気上昇。焦らずゆっくりね",
-    "ちょっと注意の日。でも大丈夫、そばにいるよ",
-  ],
-  advice: [
-    "気になっていたことに挑戦してみて。今日ならきっと叶うよ",
-    "笑顔がいちばんの開運アイテム。たくさん笑ってね",
-    "欲しかったものを買うなら今日がチャンス",
-    "思い切って新しいお店に行ってみると良い出会いがあるかも",
-    "いつもより少しだけ早起きすると、一日がうまく回るよ",
-    "身近な人に「ありがとう」を伝えると運気アップ",
-    "お気に入りの服を着て出かけてみて",
-    "直感を信じて選んだものが当たりになりそう",
-    "あたたかい飲み物でひと休みすると心が整うよ",
-    "部屋を少し片付けると、良い運が入ってくるよ",
-    "好きな音楽を聴いて気分を上げていこう",
-    "いつもの道を少し変えてみると小さな発見があるかも",
-    "午前中は無理せず、午後から本気を出そう",
-    "小さなご褒美を用意しておくと頑張れるよ",
-    "早めに寝て、明日の自分にパスしよう",
-    "深呼吸を3回。それだけで流れが変わるよ",
-    "忘れ物に注意！出かける前にもう一度チェックしてね",
-    "今日は無理せず、甘いものを食べてのんびりしよう",
-    "困ったらすぐ連絡してね。いつでも味方だよ",
-    "凶は「これから上がるだけ」のサイン。明日はきっといい日",
+    { name: "大吉", weight: 15, color: "#d4372c",
+      messages: [
+        "最高の一日！何をやってもうまくいく予感",
+        "今日は主役の日。思いきり楽しんでね",
+        "うれしいことが次々やってきそう",
+      ],
+      advice: [
+        "気になっていたことに挑戦してみて。今日ならきっと叶うよ",
+        "欲しかったものを買うなら今日がチャンス",
+        "直感を信じて選んだものが当たりになりそう",
+        "思い切って新しいお店に行ってみると良い出会いがあるかも",
+      ] },
+    { name: "中吉", weight: 25, color: "#e0752d",
+      messages: [
+        "いい流れが来ています。自信をもって進もう",
+        "がんばった分だけ、ちゃんと返ってくる日",
+        "ちょっといいことがありそうな予感",
+      ],
+      advice: [
+        "笑顔がいちばんの開運アイテム。たくさん笑ってね",
+        "お気に入りの服を着て出かけてみて",
+        "好きな音楽を聴いて気分を上げていこう",
+        "身近な人に「ありがとう」を伝えると運気アップ",
+      ] },
+    { name: "吉", weight: 30, color: "#c99a1e",
+      messages: [
+        "穏やかで心地よい一日になりそう",
+        "いつも通りが、いちばんの幸せ",
+        "小さな幸せがたくさん見つかる日",
+      ],
+      advice: [
+        "あたたかい飲み物でひと休みすると心が整うよ",
+        "部屋を少し片付けると、良い運が入ってくるよ",
+        "いつもの道を少し変えてみると小さな発見があるかも",
+        "いつもより少しだけ早起きすると、一日がうまく回るよ",
+      ] },
+    { name: "末吉", weight: 20, color: "#5b8c5a",
+      messages: [
+        "後半になるほど運気上昇。焦らずゆっくりね",
+        "コツコツが実を結ぶ日。あと少し！",
+        "夕方からいいことがありそう",
+      ],
+      advice: [
+        "午前中は無理せず、午後から本気を出そう",
+        "小さなご褒美を用意しておくと頑張れるよ",
+        "深呼吸を3回。それだけで流れが変わるよ",
+        "早めに寝て、明日の自分にパスしよう",
+      ] },
+    { name: "凶", weight: 10, color: "#5a6b8c",
+      messages: [
+        "ちょっと注意の日。でも大丈夫、そばにいるよ",
+        "今日はのんびり、ゆっくりいこう",
+        "ここから上がるだけ。明日が楽しみだね",
+      ],
+      advice: [
+        "忘れ物に注意！出かける前にもう一度チェックしてね",
+        "今日は無理せず、甘いものを食べてのんびりしよう",
+        "困ったらすぐ連絡してね。いつでも味方だよ",
+        "凶は「これから上がるだけ」のサイン。明日はきっといい日",
+      ] },
   ],
   luckyColors: [
     { name: "さくらピンク", code: "#f4a7b9" }, { name: "スカイブルー", code: "#7cc3f0" },
@@ -72,17 +99,34 @@ const fb = configured ? (() => {
   return { db: getFirestore(app), auth: getAuth(app) };
 })() : null;
 
-let CONFIG = structuredClone(DEFAULTS);
+let CONFIG = normalize(structuredClone(DEFAULTS));
 const photoCache = new Map();
 
 async function loadSettings() {
   if (!fb) return;
   try {
     const snap = await getDoc(doc(fb.db, "settings", "main"));
-    if (snap.exists()) CONFIG = { ...structuredClone(DEFAULTS), ...snap.data() };
+    if (snap.exists()) CONFIG = normalize({ ...structuredClone(DEFAULTS), ...snap.data() });
   } catch (e) {
     console.error(e);
   }
+}
+
+// 以前の形式（ひとこと・アドバイスが全運勢共通）の設定を、運勢ごとの形にそろえる。
+// 名前が初期値と同じ運勢には初期の文を、それ以外には以前の共通リストを入れる
+function normalize(c) {
+  const byName = Object.fromEntries(DEFAULTS.fortunes.map(f => [f.name, f]));
+  c.fortunes = (c.fortunes || []).map(f => {
+    const d = byName[f.name];
+    return {
+      ...f,
+      messages: Array.isArray(f.messages) ? f.messages : (d ? [...d.messages] : [...(c.messages || [])]),
+      advice: Array.isArray(f.advice) ? f.advice : (d ? [...d.advice] : [...(c.advice || [])]),
+    };
+  });
+  delete c.messages;
+  delete c.advice;
+  return c;
 }
 
 async function loadPhoto(id) {
@@ -195,13 +239,13 @@ function renderDraw() {
     $("#drawBtn").disabled = true;
     $("#box").classList.add("shake");
     setTimeout(() => {
-      // 要素ごとに別々の乱数で選ぶ（どれかのリストを変えても他は変わらない）。写真だけは運勢に付いたもの
+      // 要素ごとに別々の乱数で選ぶ（どれかのリストを変えても他は変わらない）。ひとこと・アドバイス・写真は出た運勢に付いたもの
       const rnd = name => dayRandom(`omikuji|${todayKey}|${name}`);
       const f = pickWeighted(list, rnd("rank"));
       const colors = (CONFIG.luckyColors || []).filter(c => c && c.name);
       const items = (CONFIG.luckyItems || []).filter(Boolean);
-      const msgs = CONFIG.messages || [];
-      const adv = CONFIG.advice || [];
+      const msgs = (f.messages || []).filter(Boolean);
+      const adv = (f.advice || []).filter(Boolean);
       const r = {
         date: todayKey,
         rank: f.name,
@@ -409,7 +453,7 @@ function renderSettings() {
 
       <section class="card s-section">
         <h3>運勢・出る確率・写真</h3>
-        <p class="s-note">「出やすさ」は比率です。合計が100でなくても、自動で割合に直します。写真はその運勢が出たときに表示されます（写真がない運勢は文字が大きく表示されます）。ひとこと・アドバイス・ラッキーカラー・アイテムは、運勢とは別々にランダムで選ばれます（同じ日なら何度開いても同じ結果です）。</p>
+        <p class="s-note">「出やすさ」は比率です。合計が100でなくても、自動で割合に直します。写真はその運勢が出たときに表示されます（写真がない運勢は文字が大きく表示されます）。ひとこと・アドバイスは、出た運勢の欄に書いたものからランダムで1つずつ選ばれます。ラッキーカラー・アイテムは運勢とは関係なく選ばれます（同じ日なら何度開いても同じ結果です）。</p>
         <div class="total" id="s-total">合計 ${totalW}</div>
         ${draft.fortunes.map((f, i) => `
           <div class="fortune-edit" data-i="${i}">
@@ -425,19 +469,9 @@ function renderSettings() {
                 ${f.photo ? `<button class="btn small" type="button" data-rmphoto="${i}">写真を外す</button>` : ""}
               </div>
             </div>
+            <label class="field"><span>ひとこと（運勢の下に出る一言。1行に1つずつ）</span><textarea data-k="messages" style="min-height:130px">${esc((f.messages || []).join("\n"))}</textarea></label>
+            <label class="field"><span>アドバイス（1行に1つずつ）</span><textarea data-k="advice" style="min-height:160px">${esc((f.advice || []).join("\n"))}</textarea></label>
           </div>`).join("")}
-      </section>
-
-      <section class="card s-section">
-        <h3>ひとこと</h3>
-        <p class="s-note">運勢の下に出る一言です。1行に1つずつ書いてください。</p>
-        <textarea id="s-messages">${esc(draft.messages.join("\n"))}</textarea>
-      </section>
-
-      <section class="card s-section">
-        <h3>アドバイス</h3>
-        <p class="s-note">1行に1つずつ書いてください。</p>
-        <textarea id="s-advice" style="min-height:200px">${esc(draft.advice.join("\n"))}</textarea>
       </section>
 
       <section class="card s-section">
@@ -536,9 +570,9 @@ function collect() {
     f.name = $('[data-k="name"]', r).value.trim();
     f.weight = Math.max(0, Number($('[data-k="weight"]', r).value) || 0);
     f.color = $('[data-k="color"]', r).value;
+    f.messages = lines($('[data-k="messages"]', r).value);
+    f.advice = lines($('[data-k="advice"]', r).value);
   });
-  draft.messages = lines($("#s-messages").value);
-  draft.advice = lines($("#s-advice").value);
   draft.luckyColors = $$("[data-ci]").map(r => ({ name: $('[data-k="name"]', r).value.trim(), code: $('[data-k="code"]', r).value }));
   draft.luckyItems = lines($("#s-items").value);
   draft.specialDays = $$("[data-si]").map(r => {
@@ -589,6 +623,8 @@ function setSaveMsg(text, cls) {
 function validate(c) {
   if (!/^\d{4}$/.test(c.pin)) return "暗証番号は4桁の数字にしてください";
   if (!c.fortunes.every(f => f.name)) return "運勢の名前が空になっています";
+  const empty = c.fortunes.find(f => !f.messages.length || !f.advice.length);
+  if (empty) return `「${empty.name}」のひとこととアドバイスを1つ以上入れてください`;
   if (c.fortunes.reduce((s, f) => s + f.weight, 0) <= 0) return "出やすさの合計が0です。どれかに数字を入れてください";
   if (!c.luckyColors.length) return "ラッキーカラーを1つ以上入れてください";
   if (!c.luckyItems.length) return "ラッキーアイテムを1つ以上入れてください";
@@ -623,10 +659,10 @@ async function saveSettings() {
       if (!keep.has(id)) await deleteDoc(doc(fb.db, "photos", id)).catch(() => {});
     }
 
-    const { pin, photoIds, ...rest } = draft;
+    const { pin, photoIds, messages, advice, ...rest } = draft;
     const settings = {
       ...rest,
-      fortunes: draft.fortunes.map(f => ({ name: f.name, weight: f.weight, color: f.color, photoId: (f.photo && f.photo.id) || "" })),
+      fortunes: draft.fortunes.map(f => ({ name: f.name, weight: f.weight, color: f.color, messages: f.messages, advice: f.advice, photoId: (f.photo && f.photo.id) || "" })),
       updatedAt: serverTimestamp(),
     };
     await setDoc(doc(fb.db, "settings", "main"), settings);
@@ -638,7 +674,7 @@ async function saveSettings() {
     }
     unlockedPin = pin;
 
-    CONFIG = { ...structuredClone(DEFAULTS), ...settings };
+    CONFIG = normalize({ ...structuredClone(DEFAULTS), ...settings });
     closeSettings();
     renderMain();
     toast("設定を保存しました");
